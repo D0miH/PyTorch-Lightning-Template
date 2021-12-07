@@ -21,3 +21,9 @@ pre-commit install
 
 That's it!🎊️ 
 Now you are setup and ready to go!
+
+# Start Docker Container
+To start the Docker container run the following command:
+```bash
+docker run --rm --name <container-name> --gpus '"device=<device-ids>"' -v $(pwd):/workspace  -it <image-name> bash
+```
