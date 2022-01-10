@@ -26,5 +26,10 @@ Now you are setup and ready to go!
 # Start Docker Container
 To start the Docker container run the following command:
 ```bash
+./docker_run.sh -n <container_name> -i <image_name> -d <comma_separated_device_ids>
+# e.g. ./docker_run.sh -n pytorch_lightning_template -i pytorch_lightning_template -d "0,1"
+```
+or
+```bash
 docker run --rm --name <container-name> --gpus '"device=<device-ids>"' -v $(pwd):/workspace  -it <image-name> bash
 ```

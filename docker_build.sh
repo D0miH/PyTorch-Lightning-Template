@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # default name for the container
-NAME=pytorch_lightning_tempalte
+NAME=pytorch_lightning_template
 WANDB_KEY=""
 
 POSITIONAL=()
