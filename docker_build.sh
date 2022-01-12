@@ -25,6 +25,8 @@ done
 set -- "${POSITIONAL[@]}"
 
 echo "Image name: ${NAME}"
-echo "WandB API key: ${WANDB_KEY}"
+if [ -n "${WANDB_KEY}" ] ; then
+  echo "WandB API key: ${WANDB_KEY}"
+fi
 
 docker build -t "${NAME}" --build-arg WANDB_KEY=${WANDB_KEY} .
