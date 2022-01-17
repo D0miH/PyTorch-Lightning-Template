@@ -6,7 +6,7 @@ A PyTorch-Lightning template that supports yapf autoformatting and includes a do
 ## Docker
 To build the Docker container run: 
 ```bash
-./docker_buid.sh -n <image-name> -w <wandb-key>
+./docker_build.sh -n <image-name> -w <wandb-key>
 ```
 
 ## Local Setup
