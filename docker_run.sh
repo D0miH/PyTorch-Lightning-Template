@@ -45,6 +45,6 @@ if [ -n "${MOUNTING_FILE}" ] ; then
 fi
 
 echo "----------Running the following command:----------"
-echo "docker run --rm --name "${CONTAINER_NAME}" --gpus '\""device=$DEVICES"\"' -v \$(pwd):/workspace "${ADDITIONAL_MOUNTING_COMMAND}" -itd "${IMAGE_NAME}" bash"
+echo "docker run --rm --shm-size 16G --name "${CONTAINER_NAME}" --gpus '\""device=$DEVICES"\"' -v \$(pwd):/workspace "${ADDITIONAL_MOUNTING_COMMAND}" -itd "${IMAGE_NAME}" bash"
 echo "--------------------------------------------------"
-eval "docker run --rm --name "${CONTAINER_NAME}" --gpus '\""device=$DEVICES"\"' -v $(pwd):/workspace "${ADDITIONAL_MOUNTING_COMMAND}" -itd "${IMAGE_NAME}" bash"
+eval "docker run --rm --shm-size 16G --name "${CONTAINER_NAME}" --gpus '\""device=$DEVICES"\"' -v $(pwd):/workspace "${ADDITIONAL_MOUNTING_COMMAND}" -itd "${IMAGE_NAME}" bash"

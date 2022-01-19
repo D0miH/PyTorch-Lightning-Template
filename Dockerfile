@@ -16,4 +16,4 @@ RUN conda install python=3.8.10
 RUN conda install pytorch==1.10.0 torchvision==0.11.1 torchaudio cudatoolkit=11.3 -c pytorch
 RUN pip install -r requirements.txt -f https://download.pytorch.org/whl/torch_stable.html
 
-RUN if [[ -n "$WANDB_KEY" ]] ; then echo WandB API key not provided ; else wandb login $WANDB_KEY; fi
+RUN if [ -z "$WANDB_KEY" ] ; then echo WandB API key not provided ; else wandb login "$WANDB_KEY"; fi
