@@ -6,7 +6,7 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
 # set the working directory and copy everything to the docker file
-WORKDIR ./workspace
+WORKDIR ./
 COPY ./requirements.txt ./
 
 RUN apt-get update
