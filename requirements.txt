@@ -1,9 +1,8 @@
-torch==1.10.0+cu113
-torchvision==0.11.1+cu113
-pytorch-lightning==1.5.10
-lightning-bolts==0.5.0
-torchmetrics==0.7.2
-rtpt==0.0.4
-wandb==0.12.10
-yapf==0.32.0
-pre-commit==2.17.0
+pytorch-lightning
+lightning-bolts
+torchmetrics
+rtpt
+wandb
+yapf
+pre-commit
+sklearn

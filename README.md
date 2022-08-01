@@ -12,11 +12,11 @@ To build the Docker container run:
 ## Local Setup
 To set up the project locally to use `yapf` and `pre-commit` you have to first install all dependencies using `conda` and `pip`:
 ```bash
-conda install pytorch==1.10.0 torchvision==0.11.1 torchaudio cudatoolkit=11.3 -c pytorch
-pip install -r requirements.txt -f https://download.pytorch.org/whl/torch_stable.html
+conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+pip install -r requirements.txt
 ```
 
-Then you have to setup 'pre-commit` to run yapf each time before commiting:
+Then you have to set up 'pre-commit` to run yapf each time before committing:
 ```bash
 pre-commit install
 ```
