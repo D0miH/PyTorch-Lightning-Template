@@ -12,7 +12,7 @@ COPY ./requirements.txt ./
 RUN apt-get update
 RUN apt-get -y upgrade
 RUN conda install --rev 1
-RUN conda install python=3.10.5
+RUN conda install python=3.10
 RUN conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
 RUN pip install -r requirements.txt -f https://download.pytorch.org/whl/torch_stable.html
 
