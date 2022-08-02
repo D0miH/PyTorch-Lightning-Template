@@ -40,7 +40,7 @@ ADDITIONAL_MOUNTING_COMMAND=""
 if [ -n "${MOUNTING_FILE}" ] ; then
   while read -r line; do
     [[ "$line" =~ ^#.*$ ]] && continue
-    ADDITIONAL_MOUNTING_COMMAND+="-v \$(pwd)$line:workspace$line"
+    ADDITIONAL_MOUNTING_COMMAND+="-v \$(pwd)$line:/workspace$line"
   done < "$MOUNTING_FILE"
 fi
 
