@@ -11,7 +11,7 @@ help() {
   echo "Usage: docker_build.sh [OPTION...]"
   echo 
   echo "options:"
-  echo "-n, --name      Specify a name for the Docker image. (Default: ${NAME}"
+  echo "-n, --name      Specify a name for the Docker image. (Default: ${NAME})"
   echo "-w, --wandb     Specify your Weights and Biases API key to use WandB within the Docker container."
   echo "-h, --help      Prints help."
 }
