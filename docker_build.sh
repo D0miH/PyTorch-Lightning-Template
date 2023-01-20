@@ -6,7 +6,7 @@ WANDB_KEY=""
 
 help() {
   # display the help text
-  echo "This script builds a docker container using the Dockerfile."
+  echo "This script builds a docker image using the Dockerfile."
   echo 
   echo "Usage: docker_build.sh [OPTION...]"
   echo 
