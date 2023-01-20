@@ -1,48 +1,71 @@
 #!/bin/bash
-IMAGE_NAME=clipping_privacy
-CONTAINER_NAME=clipping_privacy
+IMAGE_NAME=pytorch_lightning_template
+CONTAINER_NAME=pytorch_lightning_template
 DEVICES=0
 MOUNTING_FILE=""
 SHM_SIZE="16G"
 PORT_MAPPING=""
 
-POSITIONAL=()
-while [ $# -gt 0 ]
-do
-key="$1"
+help() {
+  # display the help text
+  echo "This script runs a docker container."
+  echo 
+  echo "Usage: docker_run.sh [OPTION...]"
+  echo 
+  echo "options:"
+  echo "-i, --image       Specify a name for the Docker image to run. (Default: ${NAME})"
+  echo "-n, --name        Specify the name of the container that is going to be started. (Default: ${CONTAINER_NAME})"
+  echo "-d, --devices     Specify the IDs of the GPUs to use (e.g. \"0,1\"). (Default: ${DEVICES})"
+  echo "--shm-size        Shared memory size of the docker container. (Default: ${SHM_SIZE})"
+  echo "-m, --mount_file  The mount file to use to mount symbolic links within the docker container. (Default: ${MOUNTING_FILE})"
+  echo "-p, --port        Specify which ports of the container should be exposed."
+  echo "-h, --help        Prints help."
+}
 
-case $key in
+POSITIONAL=()
+while [ $# -gt 0 ]; do
+  key="$1"
+
+  case $key in
     -i|--image)
-    IMAGE_NAME="$2"
-    shift # passed argument
-    shift # passed value
-    ;;
+      IMAGE_NAME="$2"
+      shift # passed argument
+      shift # passed value
+      ;;
     -n|--name)
-    CONTAINER_NAME="$2"
-    shift
-    shift
-    ;;
+      CONTAINER_NAME="$2"
+      shift
+      shift
+      ;;
     -d|--devices)
-    DEVICES="$2"
-    shift
-    shift
-    ;;
+      DEVICES="$2"
+      shift
+      shift
+      ;;
     --shm-size)
-    SHM_SIZE="$2"
-    shift
-    shift
-    ;;
+      SHM_SIZE="$2"
+      shift
+      shift
+      ;;
     -m|--mount_file)
-    MOUNTING_FILE="$2"
-    shift
-    shift
-    ;;
-    -p)
-    PORT_MAPPING="$2"
-    shift
-    shift
-    ;;
-esac
+      MOUNTING_FILE="$2"
+      shift
+      shift
+      ;;
+    -p|--port)
+      PORT_MAPPING="$2"
+      shift
+      shift
+      ;;
+    -h|--help)
+      help
+      exit 0
+      ;;
+    *)
+      echo "Argument '$key' unknown"
+      exit 1
+      ;;
+  esac
 done
 set -- "${POSITIONAL[@]}"
 
