@@ -1,6 +1,8 @@
 from typing import Type, Optional, Dict, Any, Literal, List
 
 import torch
+import torchattacks
+import torchattacks.attack
 
 from pl_modules import Classifier
 from models.cifar10_resnet import ResNet as PyTorchResNet
@@ -17,7 +19,9 @@ class CifarResNet(Classifier):
         optimizer_cls: Type[torch.optim.Optimizer] = torch.optim.Adam,
         optimizer_args: Optional[Dict[str, Any]] = None,
         lr_scheduler_cls: Optional[Any] = None,
-        lr_scheduler_args: Optional[Dict[str, Any]] = None
+        lr_scheduler_args: Optional[Dict[str, Any]] = None,
+        adv_attack_cls: Optional[Type[torchattacks.attack.Attack]] = None,
+        adv_attack_args: Optional[Dict[str, Any]] = None
     ):
         super().__init__(
             lr=lr,
@@ -25,7 +29,9 @@ class CifarResNet(Classifier):
             optimizer_cls=optimizer_cls,
             optimizer_args=optimizer_args,
             lr_scheduler_cls=lr_scheduler_cls,
-            lr_scheduler_args=lr_scheduler_args
+            lr_scheduler_args=lr_scheduler_args,
+            adv_attack_cls=adv_attack_cls,
+            adv_attack_args=adv_attack_args
         )
         self.save_hyperparameters()
 
@@ -42,7 +48,9 @@ class CifarResNet18(CifarResNet):
         optimizer_cls: Type[torch.optim.Optimizer] = torch.optim.Adam,
         optimizer_args: Optional[Dict[str, Any]] = None,
         lr_scheduler_cls: Optional[Any] = None,
-        lr_scheduler_args: Optional[Dict[str, Any]] = None
+        lr_scheduler_args: Optional[Dict[str, Any]] = None,
+        adv_attack_cls: Optional[Type[torchattacks.attack.Attack]] = None,
+        adv_attack_args: Optional[Dict[str, Any]] = None
     ):
         super().__init__(
             block='BasicBlock',
@@ -52,5 +60,7 @@ class CifarResNet18(CifarResNet):
             optimizer_cls=optimizer_cls,
             optimizer_args=optimizer_args,
             lr_scheduler_cls=lr_scheduler_cls,
-            lr_scheduler_args=lr_scheduler_args
+            lr_scheduler_args=lr_scheduler_args,
+            adv_attack_cls=adv_attack_cls,
+            adv_attack_args=adv_attack_args
         )

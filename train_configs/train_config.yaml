@@ -1,0 +1,62 @@
+# this is the default training config
+---
+dataset:
+  dataset: 'CIFAR10'
+  num_classes: null
+  image_size: &image_size 32
+model:
+  arch: 'CifarResNet18'
+training:
+  do_not_save_model: false
+  early_stopping:
+    use_early_stopping: false
+    early_stopping_patience: 20
+    early_stopping_min_delta: 0.0
+  train_augmentations:  # set to null if you want to use evaluation augmentations
+    - Resize:
+        args:
+          size: *image_size
+    - CenterCrop:
+        args:
+          size: *image_size
+    - RandomResizedCrop:
+        args:
+          size: [*image_size, *image_size]
+          scale: [0.85, 1.0]
+          ratio: [1, 1]
+    - ColorJitter:
+        args:
+          brightness: 0.2
+          contrast: 0.2
+          saturation: 0.1
+          hue: 0.1
+    - RandomHorizontalFlip:
+        args:
+          p: 0.5
+  epochs: 100
+  batch_size: 128
+  adv_training:
+    use_adv_training: true
+    adv_attack:
+      class_name: PGD
+      args:
+        eps: 0.0313
+        alpha: 0.0039
+        steps: 15
+test_augmentations:
+  - Resize:
+      args:
+        size: *image_size
+  - CenterCrop:
+      args:
+        size: *image_size
+optimizer:
+  optimizer_args:
+    weight_decay: 0.0
+  lr: 0.003
+seed: 42
+wandb:
+  use_wandb: true
+  project: facescrub
+  entity: d0mih
+

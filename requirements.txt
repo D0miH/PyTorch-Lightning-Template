@@ -6,3 +6,7 @@ wandb
 yapf
 pre-commit
 sklearn
+torchattacks
+hydra-core
+omegaconf
+scikit-learn
