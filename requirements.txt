@@ -10,3 +10,4 @@ torchattacks
 hydra-core
 omegaconf
 scikit-learn
+matplotlib

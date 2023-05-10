@@ -17,7 +17,7 @@ training:
   epochs: 100
   batch_size: 128
   adv_training:
-    use_adv_training: false
+    use_adv_training: true
     adv_attack:
       class_name: PGD
       args:

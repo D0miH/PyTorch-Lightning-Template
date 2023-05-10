@@ -18,6 +18,7 @@ from utils import get_class_from_module
 class Classifier(pl.LightningModule):
 
     model: nn.Module
+    adv_attack: torchattacks.attack.Attack = None
 
     def __init__(
         self,
@@ -62,6 +63,8 @@ class Classifier(pl.LightningModule):
             self.adv_attack.device = self.device
             self.eval()
             adv_examples = self.adv_attack(x, y).cuda()
+            # asser that some values are different
+            assert (x == adv_examples).all()
             self.train()
             x = adv_examples
 
