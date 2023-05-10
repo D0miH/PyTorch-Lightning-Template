@@ -42,9 +42,9 @@ training:
     adv_attack:
       class_name: PGD
       args:
-        eps: 0.0313
+        eps: 0.0156
         alpha: 0.0039
-        steps: 15
+        steps: 10
 test_augmentations:
   - Resize:
       args:
