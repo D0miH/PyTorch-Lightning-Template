@@ -1,4 +1,7 @@
-FROM pytorch/pytorch:1.13.1-cuda11.6-cudnn8-devel
+
+ 
+
+FROM pytorch/pytorch:2.0.0-cuda11.7-cudnn8-devel
 
 ARG WANDB_KEY
 
@@ -11,9 +14,8 @@ COPY ./requirements.txt ./
 
 RUN apt-get update
 RUN apt-get -y upgrade
-RUN conda install --rev 1
-RUN conda install python=3.10
-RUN conda install pytorch torchvision torchaudio cudatoolkit=11.6 -c pytorch
+RUN apt-get install -y git
+RUN conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
 RUN pip install -r requirements.txt -f https://download.pytorch.org/whl/torch_stable.html
 
 RUN if [ -z "$WANDB_KEY" ] ; then echo WandB API key not provided ; else wandb login "$WANDB_KEY"; fi

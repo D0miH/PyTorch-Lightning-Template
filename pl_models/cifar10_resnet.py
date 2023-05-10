@@ -1,4 +1,5 @@
 from typing import Type, Optional, Dict, Any, Literal, List
+import inspect
 
 import torch
 import torchattacks
@@ -14,30 +15,17 @@ class CifarResNet(Classifier):
         self,
         block: Literal['BasicBlock', 'Bottleneck'],
         num_blocks: List[int],
-        lr: float = 1e-4,
-        num_classes=10,
-        optimizer_cls: Type[torch.optim.Optimizer] = torch.optim.Adam,
-        optimizer_args: Optional[Dict[str, Any]] = None,
-        lr_scheduler_cls: Optional[Any] = None,
-        lr_scheduler_args: Optional[Dict[str, Any]] = None,
-        adv_attack_cls: Optional[Type[torchattacks.attack.Attack]] = None,
-        adv_attack_args: Optional[Dict[str, Any]] = None
+        **kwargs
     ):
-        super().__init__(
-            lr=lr,
-            num_classes=num_classes,
-            optimizer_cls=optimizer_cls,
-            optimizer_args=optimizer_args,
-            lr_scheduler_cls=lr_scheduler_cls,
-            lr_scheduler_args=lr_scheduler_args,
-            adv_attack_cls=adv_attack_cls,
-            adv_attack_args=adv_attack_args
-        )
+        classifier_valid_kwargs = inspect.signature(Classifier.__init__).parameters
+        classifier_kwargs = {name: kwargs[name] for name in classifier_valid_kwargs if name in kwargs}
+        super().__init__(**classifier_kwargs)
+
         self.save_hyperparameters()
 
         blocks = {"BasicBlock": BasicBlock, "Bottleneck": Bottleneck}
 
-        self.model = PyTorchResNet(block=blocks[block], num_blocks=num_blocks, num_classes=num_classes)
+        self.model = PyTorchResNet(block=blocks[block], num_blocks=num_blocks, num_classes=classifier_kwargs['num_classes'])
 
 
 class CifarResNet18(CifarResNet):

@@ -129,10 +129,16 @@ class Classifier(pl.LightningModule):
         if cfg.training.adv_training.use_adv_training:
             adv_attack_cls = get_class_from_module(torchattacks, cfg.training.adv_training.adv_attack.class_name)
             adv_attack_args = cfg.training.adv_training.adv_attack.args
-        return cls(
-            lr=cfg.optimizer.lr,
-            num_classes=cfg.dataset.num_classes,
-            optimizer_args=cfg.optimizer.optimizer_args,
-            adv_attack_cls=adv_attack_cls,
-            adv_attack_args=adv_attack_args
-        )
+
+        model_args = {
+            'lr': cfg.optimizer.lr,
+            'num_classes': cfg.dataset.num_classes,
+            'optimizer_args': cfg.optimizer.optimizer_args,
+            'adv_attack_cls': adv_attack_cls,
+            'adv_attack_args': adv_attack_args
+        }
+
+        if cfg.model.model_args is not None:
+            model_args.update(cfg.model.model_args)
+
+        return cls(**model_args)

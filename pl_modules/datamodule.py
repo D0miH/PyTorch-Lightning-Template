@@ -44,10 +44,12 @@ class DataModule(pl.LightningDataModule):
         # even though these datasets are identical, we have to create it once for the training data and once for
         # the validation data because of the different transformations
         train_data: DatasetInterface = self.dataset_cls(
-            **ChainMap({'train': True}, self.dataset_args), transform=self._train_transforms
+            transform=self._train_transforms,
+            **ChainMap({'train': True}, self.dataset_args)
         )
         val_data: DatasetInterface = self.dataset_cls(
-            **ChainMap({'train': True}, self.dataset_args), transform=self._val_transforms
+            transform=self._val_transforms,
+            **ChainMap({'train': True}, self.dataset_args)
         )
         train_indices, val_indices = train_test_split(
             list(range(len(train_data))),
@@ -60,7 +62,8 @@ class DataModule(pl.LightningDataModule):
         self.val_data = Subset(val_data, val_indices)
 
         self.test_data = self.dataset_cls(
-            **ChainMap({'train': False}, self.dataset_args), transform=self._test_transforms
+            transform=self._test_transforms,
+            **ChainMap({'train': False}, self.dataset_args)
         )
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:

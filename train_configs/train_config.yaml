@@ -6,33 +6,14 @@ dataset:
   image_size: &image_size 32
 model:
   arch: 'CifarResNet18'
+  model_args: null
 training:
   do_not_save_model: false
   early_stopping:
     use_early_stopping: false
     early_stopping_patience: 20
     early_stopping_min_delta: 0.0
-  train_augmentations:  # set to null if you want to use evaluation augmentations
-    - Resize:
-        args:
-          size: *image_size
-    - CenterCrop:
-        args:
-          size: *image_size
-    - RandomResizedCrop:
-        args:
-          size: [*image_size, *image_size]
-          scale: [0.85, 1.0]
-          ratio: [1, 1]
-    - ColorJitter:
-        args:
-          brightness: 0.2
-          contrast: 0.2
-          saturation: 0.1
-          hue: 0.1
-    - RandomHorizontalFlip:
-        args:
-          p: 0.5
+  train_augmentations: null # set to null if you want to use evaluation augmentations
   epochs: 100
   batch_size: 128
   adv_training:
@@ -40,9 +21,9 @@ training:
     adv_attack:
       class_name: PGD
       args:
-        eps: 0.0313
+        eps: 0.0156
         alpha: 0.0039
-        steps: 15
+        steps: 10
 test_augmentations:
   - Resize:
       args:

@@ -1,7 +1,7 @@
 #!/bin/bash
 IMAGE_NAME=pytorch_lightning_template
 CONTAINER_NAME=pytorch_lightning_template
-DEVICES=0
+DEVICES=""
 MOUNTING_FILE=""
 SHM_SIZE="16G"
 PORT_MAPPING=""
