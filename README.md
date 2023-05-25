@@ -21,8 +21,11 @@ or
 docker run --rm --name <container-name> --gpus '"device=<device-ids>"' -v $(pwd):/workspace  -it <image-name> bash
 ```
 
+That's it!🎊️  
+Now you are setup and ready to develop using Docker!
+
 # Local Setup
-To set up the project locally to use `yapf` and `pre-commit` you have to first install PyTorch:
+If you don't want to use Docker and instead want to set up the project locally to use `yapf` and `pre-commit` you have to first install PyTorch:
 ```bash
 conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
 ```
