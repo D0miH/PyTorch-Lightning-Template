@@ -3,28 +3,14 @@ A PyTorch-Lightning template that supports yapf autoformatting and includes a do
 
 # Setup
 
-## Docker
-To build the Docker container run: 
+# Setup Using Docker
+## Build the Docker Image
+To build the Docker image run: 
 ```bash
 ./docker_build.sh -n <image-name> -w <wandb-key>
 ```
 
-## Local Setup
-To set up the project locally to use `yapf` and `pre-commit` you have to first install all dependencies using `conda` and `pip`:
-```bash
-conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
-pip install -r requirements.txt
-```
-
-Then you have to set up 'pre-commit` to run yapf each time before committing:
-```bash
-pre-commit install
-```
-
-That's it!🎊️ 
-Now you are setup and ready to go!
-
-# Start Docker Container
+## Start Docker Container
 To start the Docker container run the following command:
 ```bash
 ./docker_run.sh -n <container_name> -i <image_name> -d <comma_separated_device_ids>
@@ -34,3 +20,23 @@ or
 ```bash
 docker run --rm --name <container-name> --gpus '"device=<device-ids>"' -v $(pwd):/workspace  -it <image-name> bash
 ```
+
+# Local Setup
+To set up the project locally to use `yapf` and `pre-commit` you have to first install PyTorch:
+```bash
+conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+```
+Then you have to install all other dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+Finally, you have to set up 'pre-commit` to run yapf each time before committing:
+```bash
+pre-commit install
+```
+
+That's it!🎊️ 
+Now you are setup and ready to go!
+
+
