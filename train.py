@@ -57,6 +57,9 @@ def train_model(cfg: DictConfig):
         dataset_args={
             'root': f'./data/{cfg.dataset.dataset.lower()}', 'download': True
         },
+        dataloader_args={
+            'num_workers': 8
+        },
         batch_size=cfg.training.batch_size,
         train_transforms=train_transforms,
         val_transforms=eval_transforms,

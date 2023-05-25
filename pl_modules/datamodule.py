@@ -29,7 +29,7 @@ class DataModule(pl.LightningDataModule):
         self._train_transforms = train_transforms
         self._val_transforms = val_transforms
         self._test_transforms = test_transforms
-        self.dataloader_args = ChainMap(dataloader_args or {}, {'shuffle': True, 'num_workers': 0, 'pin_memory': True})
+        self.dataloader_args = ChainMap(dataloader_args or {}, {'shuffle': True, 'pin_memory': True})
 
         # those attributes will be set during setup
         self.train_data = None
