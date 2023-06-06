@@ -94,7 +94,7 @@ def train_model(cfg: DictConfig):
     if cfg.wandb.use_wandb:
         arch_name = model.get_architecture_name()
         wandb_logger = WandbLogger(
-            name=f'{arch_name} {cfg.dataset.dataset}', project=cfg.wandb.project, entity=cfg.wandb.entity, log_model=not cfg.training.do_not_save_model
+            name=f'{arch_name} {cfg.dataset.dataset} {cfg.wandb.experiment_name}', project=cfg.wandb.project, entity=cfg.wandb.entity, log_model=not cfg.training.do_not_save_model
         )
         wandb_logger.watch(model)
         wandb_logger.log_hyperparams(cfg)

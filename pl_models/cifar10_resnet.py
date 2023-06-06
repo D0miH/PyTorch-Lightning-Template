@@ -29,26 +29,11 @@ class CifarResNet(Classifier):
 
 
 class CifarResNet18(CifarResNet):
-    def __init__(
-        self,
-        lr: float = 1e-4,
-        num_classes=10,
-        optimizer_cls: Type[torch.optim.Optimizer] = torch.optim.Adam,
-        optimizer_args: Optional[Dict[str, Any]] = None,
-        lr_scheduler_cls: Optional[Any] = None,
-        lr_scheduler_args: Optional[Dict[str, Any]] = None,
-        adv_attack_cls: Optional[Type[torchattacks.attack.Attack]] = None,
-        adv_attack_args: Optional[Dict[str, Any]] = None
-    ):
+    def __init__(self, **kwargs):
+        classifier_valid_kwargs = inspect.signature(Classifier.__init__).parameters
+        classifier_kwargs = {name: kwargs[name] for name in classifier_valid_kwargs if name in kwargs}
         super().__init__(
             block='BasicBlock',
-            num_blocks=[2, 2, 2, 2],
-            lr=lr,
-            num_classes=num_classes,
-            optimizer_cls=optimizer_cls,
-            optimizer_args=optimizer_args,
-            lr_scheduler_cls=lr_scheduler_cls,
-            lr_scheduler_args=lr_scheduler_args,
-            adv_attack_cls=adv_attack_cls,
-            adv_attack_args=adv_attack_args
+            num_blocks=[2, 2, 2, 2, ],
+            **classifier_kwargs
         )

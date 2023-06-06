@@ -43,9 +43,6 @@ class Classifier(pl.LightningModule):
         self.adv_attack_cls = adv_attack_cls
         self.adv_attack_args = adv_attack_args
 
-        if self.adv_attack_cls is not None:
-            self.automatic_optimization = False
-
     def forward(self, x):
         return self.model(x)
 
@@ -62,9 +59,7 @@ class Classifier(pl.LightningModule):
         if self.adv_attack is not None:
             self.adv_attack.device = self.device
             self.eval()
-            adv_examples = self.adv_attack(x, y).cuda()
-            # asser that some values are different
-            assert (x == adv_examples).all()
+            adv_examples = self.adv_attack(x, y)
             self.train()
             x = adv_examples
 
@@ -73,6 +68,7 @@ class Classifier(pl.LightningModule):
         loss = F.cross_entropy(output, y)
         self.log("train_loss", round(loss.item(), 3), prog_bar=True)
         self.log("train_acc", round(self.accuracy(output.softmax(1), y).item(), 3), prog_bar=True)
+
         return loss
 
     def validation_step(self, batch, batch_idx):
