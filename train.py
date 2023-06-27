@@ -19,7 +19,7 @@ from pl_modules.datamodule import DataModule
 from utils import get_class_from_module, LightningRtpt
 
 
-@hydra.main(version_base=None, config_path='train_configs', config_name='train_config')
+@hydra.main(version_base=None, config_path='configs', config_name='defaults')
 def train_model(cfg: DictConfig):
     # get the model
     model_cls: Classifier = get_class_from_module(pl_models, cfg.model.arch)

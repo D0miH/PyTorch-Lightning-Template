@@ -1,0 +1,4 @@
+dataset:
+  dataset: 'cifar100'
+  num_classes: 100
+  image_size: 32

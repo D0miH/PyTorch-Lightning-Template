@@ -1,0 +1,4 @@
+---
+class_name: Resize
+args:
+  size: ${class_name}

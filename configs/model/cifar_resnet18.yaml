@@ -1,0 +1,3 @@
+model:
+  arch: 'CifarResNet18'
+  model_args: null

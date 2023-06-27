@@ -1,0 +1,6 @@
+---
+defaults:
+  - dataset: cifar10
+  - model: cifar_resnet18
+  - augmentations: resize
+  - normalization: imagenet
