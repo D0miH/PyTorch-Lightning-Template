@@ -21,9 +21,6 @@ from utils import get_class_from_module, LightningRtpt
 
 @hydra.main(version_base=None, config_path='configs', config_name='defaults')
 def train_model(cfg: DictConfig):
-    # resolve the config using omegaconf
-    OmegaConf.resolve(cfg)
-
     # get the model
     model_cls: Classifier = get_class_from_module(pl_models, cfg.model.arch)
 
@@ -35,9 +32,7 @@ def train_model(cfg: DictConfig):
         augm_name, augm_args = list(augm.items())[0]
         augm_cls = get_class_from_module(T, augm_name)
         eval_transforms_list.append(augm_cls(**augm_args['args']))
-    eval_transforms_list.extend([
-        T.ToTensor(), T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-    ])
+    eval_transforms_list.extend([T.ToTensor(), T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))])
     eval_transforms = T.Compose(eval_transforms_list)
 
     train_transforms_list = []
@@ -48,9 +43,7 @@ def train_model(cfg: DictConfig):
         augm_name, augm_args = list(augm.items())[0]
         augm_cls = get_class_from_module(T, augm_name)
         train_transforms_list.append(augm_cls(**augm_args['args']))
-    train_transforms_list.extend([
-        T.ToTensor(), T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-    ])
+    train_transforms_list.extend([T.ToTensor(), T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))])
     train_transforms = T.Compose(train_transforms_list)
 
     # get the datamodule
@@ -60,9 +53,7 @@ def train_model(cfg: DictConfig):
         dataset_args={
             'root': f'./data/{cfg.dataset.dataset.lower()}', 'download': True
         },
-        dataloader_args={
-            'num_workers': 8
-        },
+        dataloader_args={'num_workers': 8},
         batch_size=cfg.training.batch_size,
         train_transforms=train_transforms,
         val_transforms=eval_transforms,
@@ -77,9 +68,10 @@ def train_model(cfg: DictConfig):
         model.adv_attack.set_normalization_used(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
         # model.adv_attack = model.adv_attack.to(model.device)
 
-
     model_checkpoint = ModelCheckpoint(save_last=True, verbose=True)
-    rtpt = LightningRtpt(name_initials="DH", experiment_name=model.get_architecture_name(), max_iterations=cfg.training.epochs)
+    rtpt = LightningRtpt(
+        name_initials="DH", experiment_name=model.get_architecture_name(), max_iterations=cfg.training.epochs
+    )
     lr_monitor = LearningRateMonitor(logging_interval='step')
     callbacks = [rtpt, model_checkpoint, lr_monitor]
 
@@ -97,7 +89,10 @@ def train_model(cfg: DictConfig):
     if cfg.wandb.use_wandb:
         arch_name = model.get_architecture_name()
         wandb_logger = WandbLogger(
-            name=f'{arch_name} {cfg.dataset.dataset} {cfg.wandb.experiment_name}', project=cfg.wandb.project, entity=cfg.wandb.entity, log_model=not cfg.training.do_not_save_model
+            name=f'{arch_name} {cfg.dataset.dataset} {cfg.wandb.experiment_name}',
+            project=cfg.wandb.project,
+            entity=cfg.wandb.entity,
+            log_model=not cfg.training.do_not_save_model
         )
         wandb_logger.watch(model)
         wandb_logger.log_hyperparams(cfg)

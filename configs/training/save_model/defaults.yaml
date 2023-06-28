@@ -1,0 +1,3 @@
+# @package training
+defaults:
+    - save_model

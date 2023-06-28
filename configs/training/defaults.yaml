@@ -1,4 +1,4 @@
-# @package _global_
+# @package training
 defaults:
-  - .@training: save_model
-  - /.@early_stopping: null
+  - save_model: defaults
+  - early_stopping: null
