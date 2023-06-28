@@ -1,5 +1,5 @@
 pytorch-lightning==2.0.4
-lightning-bolts==0.6.0
+lightning-bolts==0.6.0.post1
 torchmetrics==0.11.4
 rtpt
 wandb
@@ -8,5 +8,4 @@ pre-commit
 scikit-learn
 torchattacks==3.4.0
 hydra-core
-omegaconf
 matplotlib
