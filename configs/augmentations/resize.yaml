@@ -1,4 +1,4 @@
----
-class_name: Resize
-args:
-  size: ${class_name}
+resize:
+    _target_: "torchvision.transforms.Resize"
+    size: ${dataset.image_size}
+    antialias: true

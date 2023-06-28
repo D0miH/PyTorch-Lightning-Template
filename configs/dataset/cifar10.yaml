@@ -1,4 +1,3 @@
-dataset:
-  dataset: 'cifar10'
-  num_classes: 10
-  image_size: 32
+name: 'cifar10'
+num_classes: 10
+image_size: 32
