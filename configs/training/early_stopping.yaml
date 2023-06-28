@@ -1,0 +1,4 @@
+early_stopping:
+  use_early_stopping: false
+  early_stopping_patience: 20
+  early_stopping_min_delta: 0.0

@@ -21,6 +21,9 @@ from utils import get_class_from_module, LightningRtpt
 
 @hydra.main(version_base=None, config_path='configs', config_name='defaults')
 def train_model(cfg: DictConfig):
+    # resolve the config using omegaconf
+    OmegaConf.resolve(cfg)
+
     # get the model
     model_cls: Classifier = get_class_from_module(pl_models, cfg.model.arch)
 

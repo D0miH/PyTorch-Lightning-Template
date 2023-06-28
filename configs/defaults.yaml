@@ -1,6 +1,7 @@
 defaults:
   - dataset: cifar10
   - model: cifar_resnet18
-  - augmentations:
-    - resize
-  - normalization: imagenet
+  - augmentations@train_augmentations: defaults
+  - augmentations@eval_augmentations: defaults
+  - normalization: defaults
+  - training: defaults
