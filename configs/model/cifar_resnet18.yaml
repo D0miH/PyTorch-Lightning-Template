@@ -1,3 +1,10 @@
-model:
-  arch: 'CifarResNet18'
-  model_args: null
+name: 'CifarResNet18'
+class_instance:
+    _target_: 'pl_models.cifar10_resnet.CifarResNet'
+    lr: ${optimizer.lr}
+    num_classes: ${dataset.num_classes}
+    partial_optimizer: ${optimizer}
+    partial_lr_scheduler: ${lr_scheduler}
+    partial_adv_attack: ${adv_training}
+    block: 'BasicBlock'
+    num_blocks: [2, 2, 2, 2]

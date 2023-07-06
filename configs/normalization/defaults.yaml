@@ -1,1 +1,2 @@
-normalization: imagenet
+defaults:
+    - imagenet

@@ -34,6 +34,6 @@ class CifarResNet18(CifarResNet):
         classifier_kwargs = {name: kwargs[name] for name in classifier_valid_kwargs if name in kwargs}
         super().__init__(
             block='BasicBlock',
-            num_blocks=[2, 2, 2, 2, ],
+            num_blocks=[2, 2, 2, 2],
             **classifier_kwargs
         )
