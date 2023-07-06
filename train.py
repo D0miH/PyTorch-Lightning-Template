@@ -102,12 +102,8 @@ def train_model(cfg: DictConfig):
 
     # save the hydra logs for debugging and reproducibility
     wandb.save(
-        './' + hydra.core.hydra_config.HydraConfig.get().run.dir + '/*',
-        base_path=os.path.dirname(hydra.core.hydra_config.HydraConfig.get().run.dir)
-    )
-    wandb.save(
         './' + hydra.core.hydra_config.HydraConfig.get().run.dir + '/.hydra/*',
-        base_path=os.path.dirname(hydra.core.hydra_config.HydraConfig.get().run.dir)
+        base_path=os.path.dirname('./' + hydra.core.hydra_config.HydraConfig.get().run.dir + '/.hydra')
     )
 
 
