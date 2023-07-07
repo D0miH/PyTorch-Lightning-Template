@@ -1,4 +1,7 @@
-dataset:
-  dataset: 'CIFAR10'
-  num_classes: null
-  image_size: 32
+image_size: 32
+num_classes: 10
+name: "CIFAR 10"
+class_instance:
+    _target_: "datasets.cifar10.CIFAR10"
+    root: './data/cifar10'
+    download: true

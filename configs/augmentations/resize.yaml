@@ -1,0 +1,4 @@
+resize:
+    _target_: "torchvision.transforms.Resize"
+    size: ${dataset.image_size}
+    antialias: true

@@ -3,6 +3,7 @@ data/
 lightning_logs/
 wandb/
 outputs/
+Template Project/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,0 +1,4 @@
+# @package training
+early_stopping:
+  early_stopping_patience: 20
+  early_stopping_min_delta: 0.0

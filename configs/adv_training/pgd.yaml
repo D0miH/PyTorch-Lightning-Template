@@ -1,0 +1,6 @@
+_target_: "torchattacks.attacks.pgd.PGD"
+eps: ${eval:'8/255'}
+alpha: ${eval:'2/255'}
+steps: 10
+random_start: true
+_partial_: true

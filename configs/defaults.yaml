@@ -1,0 +1,29 @@
+defaults:
+    - dataset: cifar10
+    - model: cifar_resnet18
+    - optimizer: defaults
+    - lr_scheduler: defaults
+    - augmentations@train_augmentations: defaults
+    - augmentations@eval_augmentations: defaults
+    - normalization: defaults
+    - training: defaults
+    - adv_training: defaults
+    - _self_
+
+seed: 42
+wandb:
+    entity: null
+    experiment_name: 'Template Experiment'
+    run_name: ${model.name} ${dataset.name} ${wandb.experiment_name}
+    offline: false
+    project: 'Template Project'
+datamodule:
+    _target_: "pl_modules.datamodule.DataModule"
+    batch_size: ${training.batch_size}
+    dataset_args: null
+    dataloader_args:
+        num_workers: 8
+        shuffle: True
+        pin_memory: True
+rtpt:
+    initials: 'DH'

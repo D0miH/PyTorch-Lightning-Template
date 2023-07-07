@@ -1,0 +1,3 @@
+random_rotation:
+    _target_: "torchvision.transforms.RandomRotation"
+    degrees: 10

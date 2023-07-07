@@ -1,12 +1,11 @@
-import argparse
-from typing import Optional
-
 from pytorch_lightning import seed_everything
 import torchvision.transforms as T
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
 from pytorch_lightning.loggers import WandbLogger
 from torch.optim.lr_scheduler import MultiStepLR
+import wandb
+import os
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -18,86 +17,77 @@ from pl_modules import Classifier
 from pl_modules.datamodule import DataModule
 from utils import get_class_from_module, LightningRtpt
 
+OmegaConf.register_new_resolver("eval", eval)
 
-@hydra.main(version_base=None, config_path='train_configs', config_name='train_config')
+
+@hydra.main(version_base=None, config_path='configs', config_name='defaults.yaml')
 def train_model(cfg: DictConfig):
-    # get the model
-    model_cls: Classifier = get_class_from_module(pl_models, cfg.model.arch)
-
+    # seed everything for reproducibility
     seed_everything(cfg.seed, workers=True)
 
     # define the training and eval transforms
     eval_transforms_list = []
-    for augm in cfg.test_augmentations:
-        augm_name, augm_args = list(augm.items())[0]
-        augm_cls = get_class_from_module(T, augm_name)
-        eval_transforms_list.append(augm_cls(**augm_args['args']))
-    eval_transforms_list.extend([
-        T.ToTensor(), T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-    ])
+    for aug_key, aug_dict in cfg.eval_augmentations.items():
+        eval_transforms_list.append(hydra.utils.instantiate(aug_dict))
+    eval_transforms_list.extend([T.ToTensor(), T.Normalize(mean=cfg.normalization.mean, std=cfg.normalization.std)])
     eval_transforms = T.Compose(eval_transforms_list)
 
     train_transforms_list = []
-    if cfg.training.train_augmentations is None:
-        cfg.training.train_augmentations = cfg.test_augmentations
-
-    for augm in cfg.training.train_augmentations:
-        augm_name, augm_args = list(augm.items())[0]
-        augm_cls = get_class_from_module(T, augm_name)
-        train_transforms_list.append(augm_cls(**augm_args['args']))
-    train_transforms_list.extend([
-        T.ToTensor(), T.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-    ])
+    for aug_key, aug_dict in cfg.train_augmentations.items():
+        train_transforms_list.append(hydra.utils.instantiate(aug_dict))
+    train_transforms_list.extend([T.ToTensor(), T.Normalize(mean=cfg.normalization.mean, std=cfg.normalization.std)])
     train_transforms = T.Compose(train_transforms_list)
 
     # get the datamodule
-    dataset_cls = get_class_from_module(datasets, cfg.dataset.dataset)
-    datamodule = DataModule(
-        dataset_cls,
-        dataset_args={
-            'root': f'./data/{cfg.dataset.dataset.lower()}', 'download': True
-        },
-        dataloader_args={
-            'num_workers': 8
-        },
-        batch_size=cfg.training.batch_size,
+    dataset_cls = hydra.utils.instantiate(cfg.dataset.class_instance, _partial_=True)
+    datamodule_cls = hydra.utils.instantiate(cfg.datamodule, _partial_=True)
+
+    datamodule = datamodule_cls(
+        dataset_cls=dataset_cls,
         train_transforms=train_transforms,
         val_transforms=eval_transforms,
         test_transforms=eval_transforms
     )
-    if cfg.dataset.num_classes is None:
-        cfg.dataset.num_classes = datamodule.num_classes()
 
-    model = model_cls.from_cfg(cfg)
-    if model.adv_attack_cls is not None:
-        model.adv_attack = model.adv_attack_cls(model, **model.adv_attack_args)
-        model.adv_attack.set_normalization_used(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
-        # model.adv_attack = model.adv_attack.to(model.device)
+    # check if a lr scheduler or an adv. attack is given
+    for key in ('lr_scheduler', 'adv_training'):
+        # if the value is an empty dict assign None.
+        # This is a dirty workaround since we cannot assign None values to default list items in hydra
+        if cfg[key] == {}:
+            cfg[key] = None
 
+    model: Classifier = hydra.utils.instantiate(cfg.model.class_instance)
+    if model.partial_adv_attack is not None:
+        model.configure_adv_attack(normalization_mean=cfg.normalization.mean, normalization_std=cfg.normalization.std)
 
     model_checkpoint = ModelCheckpoint(save_last=True, verbose=True)
-    rtpt = LightningRtpt(name_initials="DH", experiment_name=model.get_architecture_name(), max_iterations=cfg.training.epochs)
+    rtpt = LightningRtpt(
+        name_initials=cfg.rtpt.initials,
+        experiment_name=model.get_architecture_name(),
+        max_iterations=cfg.training.epochs
+    )
     lr_monitor = LearningRateMonitor(logging_interval='step')
     callbacks = [rtpt, model_checkpoint, lr_monitor]
 
     # if not disabled use early stopping
-    if cfg.training.early_stopping.use_early_stopping:
+    if hasattr(cfg.training, 'early_stopping'):
         early_stopper = EarlyStopping(
             monitor='val_loss',
-            patience=cfg.training.early_stopping_patience,
-            min_delta=cfg.training.early_stopping_min_delta,
+            patience=cfg.training.early_stopping.early_stopping_patience,
+            min_delta=cfg.training.early_stopping.early_stopping_min_delta,
             verbose=True
         )
         callbacks.append(early_stopper)
 
-    wandb_logger = True
-    if cfg.wandb.use_wandb:
-        arch_name = model.get_architecture_name()
-        wandb_logger = WandbLogger(
-            name=f'{arch_name} {cfg.dataset.dataset} {cfg.wandb.experiment_name}', project=cfg.wandb.project, entity=cfg.wandb.entity, log_model=not cfg.training.do_not_save_model
-        )
-        wandb_logger.watch(model)
-        wandb_logger.log_hyperparams(cfg)
+    wandb_logger = WandbLogger(
+        name=cfg.wandb.run_name,
+        project=cfg.wandb.project,
+        entity=cfg.wandb.entity,
+        log_model=(cfg.training.save_model and not cfg.wandb.offline),
+        offline=cfg.wandb.offline
+    )
+    wandb_logger.watch(model)
+    wandb_logger.log_hyperparams(OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
 
     trainer = pl.Trainer(
         accelerator='auto',
@@ -109,6 +99,12 @@ def train_model(cfg: DictConfig):
     )
     trainer.fit(model, datamodule=datamodule)
     trainer.test(model, datamodule=datamodule)
+
+    # save the hydra logs for debugging and reproducibility
+    wandb.save(
+        './' + hydra.core.hydra_config.HydraConfig.get().run.dir + '/.hydra/*',
+        base_path=os.path.dirname('./' + hydra.core.hydra_config.HydraConfig.get().run.dir + '/.hydra')
+    )
 
 
 if __name__ == '__main__':

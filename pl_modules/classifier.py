@@ -1,6 +1,7 @@
+import functools
 import inspect
 from argparse import Namespace, ArgumentParser
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, Optional, Type, Union, Callable, Iterator
 
 import torchattacks
 import torchattacks.attack
@@ -8,15 +9,14 @@ from omegaconf import DictConfig
 from torch import nn
 import torch.nn.functional as F
 import torch
+from torch.nn.parameter import Parameter
+from torch.optim.lr_scheduler import LRScheduler
 
 import pytorch_lightning as pl
 import torchmetrics
 
-from utils import get_class_from_module
-
 
 class Classifier(pl.LightningModule):
-
     model: nn.Module
     adv_attack: torchattacks.attack.Attack = None
 
@@ -24,24 +24,18 @@ class Classifier(pl.LightningModule):
         self,
         lr: float = 1e-4,
         num_classes=10,
-        optimizer_cls: Type[torch.optim.Optimizer] = torch.optim.Adam,
-        optimizer_args: Optional[Dict[str, Any]] = None,
-        lr_scheduler_cls: Optional[Any] = None,
-        lr_scheduler_args: Optional[Dict[str, Any]] = None,
-        adv_attack_cls: Optional[Type[torchattacks.attack.Attack]] = None,
-        adv_attack_args: Optional[Dict[str, Any]] = None
+        partial_optimizer: Callable[[Iterator[Parameter]], torch.optim.Optimizer] = functools.partial(torch.optim.Adam),
+        partial_lr_scheduler: Optional[Callable[[torch.optim.Optimizer], LRScheduler]] = None,
+        partial_adv_attack: Optional[Callable[[nn.Module], torchattacks.attack.Attack]] = None,
     ):
         super().__init__()
         self.save_hyperparameters()
         self.lr = lr
         self._num_classes = num_classes
         self.accuracy = torchmetrics.Accuracy(num_classes=num_classes, task='multiclass')
-        self.optimizer_cls = optimizer_cls
-        self.optimizer_args = optimizer_args
-        self.lr_scheduler_cls = lr_scheduler_cls
-        self.lr_scheduler_args = lr_scheduler_args
-        self.adv_attack_cls = adv_attack_cls
-        self.adv_attack_args = adv_attack_args
+        self.partial_optimizer = partial_optimizer
+        self.partial_lr_scheduler = partial_lr_scheduler
+        self.partial_adv_attack = partial_adv_attack
 
     def forward(self, x):
         return self.model(x)
@@ -62,7 +56,6 @@ class Classifier(pl.LightningModule):
             adv_examples = self.adv_attack(x, y)
             self.train()
             x = adv_examples
-
 
         output = self.model(x)
         loss = F.cross_entropy(output, y)
@@ -86,15 +79,20 @@ class Classifier(pl.LightningModule):
         self.log("test_loss", round(loss.item(), 3))
 
     def configure_optimizers(self):
-        optim = self.optimizer_cls(self.model.parameters(), lr=self.lr, **(self.optimizer_args or {}))
+        optim = self.partial_optimizer(self.model.parameters())
 
-        if self.lr_scheduler_cls is None:
+        if self.partial_lr_scheduler is None:
             return optim
 
-        scheduler = self.lr_scheduler_cls(optim, **(self.lr_scheduler_args or {}))
+        scheduler = self.partial_lr_scheduler(optim)
         lr_scheduler_config = {'scheduler': scheduler, 'interval': 'step', 'monitor': 'val_loss', 'name': 'LR'}
 
         return [optim], [lr_scheduler_config]
+
+    def configure_adv_attack(self, normalization_mean=None, normalization_std=None):
+        self.adv_attack = self.partial_adv_attack(self)
+        if normalization_mean is not None and normalization_std is not None:
+            self.adv_attack.set_normalization_used(mean=normalization_mean, std=normalization_std)
 
     @property
     def num_classes(self):
@@ -119,25 +117,3 @@ class Classifier(pl.LightningModule):
         cls_kwargs = {name: params[name] for name in valid_kwargs if name in params}
 
         return cls(**cls_kwargs)
-
-    @classmethod
-    def from_cfg(cls: Type["Classifier"], cfg: DictConfig) -> "Classifier":
-
-        adv_attack_cls = None
-        adv_attack_args = None
-        if cfg.training.adv_training.use_adv_training:
-            adv_attack_cls = get_class_from_module(torchattacks, cfg.training.adv_training.adv_attack.class_name)
-            adv_attack_args = cfg.training.adv_training.adv_attack.args
-
-        model_args = {
-            'lr': cfg.optimizer.lr,
-            'num_classes': cfg.dataset.num_classes,
-            'optimizer_args': cfg.optimizer.optimizer_args,
-            'adv_attack_cls': adv_attack_cls,
-            'adv_attack_args': adv_attack_args
-        }
-
-        if cfg.model.model_args is not None:
-            model_args.update(cfg.model.model_args)
-
-        return cls(**model_args)

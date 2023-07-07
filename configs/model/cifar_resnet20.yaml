@@ -1,0 +1,2 @@
+arch: 'CifarResNet20'
+model_args: null

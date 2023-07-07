@@ -1,0 +1,8 @@
+# @package training
+defaults:
+  - early_stopping: null
+  - _self_
+
+save_model: true
+epochs: 100
+batch_size: 128

@@ -14,8 +14,8 @@ class DataModule(pl.LightningDataModule):
     def __init__(
         self,
         dataset_cls: Type[Dataset],
-        dataset_args: Dict[str, Any],
         batch_size: int,
+        dataset_args: Optional[Dict[str, Any]] = None,
         train_transforms=None,
         val_transforms=None,
         test_transforms=None,
@@ -24,12 +24,12 @@ class DataModule(pl.LightningDataModule):
         super().__init__()
 
         self.dataset_cls = dataset_cls
-        self.dataset_args = dataset_args
+        self.dataset_args = dataset_args or {}
         self.batch_size = batch_size
         self._train_transforms = train_transforms
         self._val_transforms = val_transforms
         self._test_transforms = test_transforms
-        self.dataloader_args = ChainMap(dataloader_args or {}, {'shuffle': True, 'pin_memory': True})
+        self.dataloader_args = dataloader_args or {}
 
         # those attributes will be set during setup
         self.train_data = None
@@ -44,12 +44,10 @@ class DataModule(pl.LightningDataModule):
         # even though these datasets are identical, we have to create it once for the training data and once for
         # the validation data because of the different transformations
         train_data: DatasetInterface = self.dataset_cls(
-            transform=self._train_transforms,
-            **ChainMap({'train': True}, self.dataset_args)
+            transform=self._train_transforms, **ChainMap({'train': True}, self.dataset_args)
         )
         val_data: DatasetInterface = self.dataset_cls(
-            transform=self._val_transforms,
-            **ChainMap({'train': True}, self.dataset_args)
+            transform=self._val_transforms, **ChainMap({'train': True}, self.dataset_args)
         )
         train_indices, val_indices = train_test_split(
             list(range(len(train_data))),
@@ -62,8 +60,7 @@ class DataModule(pl.LightningDataModule):
         self.val_data = Subset(val_data, val_indices)
 
         self.test_data = self.dataset_cls(
-            transform=self._test_transforms,
-            **ChainMap({'train': False}, self.dataset_args)
+            transform=self._test_transforms, **ChainMap({'train': False}, self.dataset_args)
         )
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
