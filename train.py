@@ -16,8 +16,10 @@ import datasets
 from pl_modules import Classifier
 from pl_modules.datamodule import DataModule
 from utils import get_class_from_module, LightningRtpt
+from custom_resolvers import wandb_artifact
 
 OmegaConf.register_new_resolver("eval", eval)
+OmegaConf.register_new_resolver("wandb_artifact", wandb_artifact)
 
 
 @hydra.main(version_base=None, config_path='configs', config_name='defaults.yaml')
@@ -27,13 +29,13 @@ def train_model(cfg: DictConfig):
 
     # define the training and eval transforms
     eval_transforms_list = []
-    for aug_key, aug_dict in cfg.eval_augmentations.items():
+    for aug_key, aug_dict in cfg.eval_transforms.items():
         eval_transforms_list.append(hydra.utils.instantiate(aug_dict))
     eval_transforms_list.extend([T.ToTensor(), T.Normalize(mean=cfg.normalization.mean, std=cfg.normalization.std)])
     eval_transforms = T.Compose(eval_transforms_list)
 
     train_transforms_list = []
-    for aug_key, aug_dict in cfg.train_augmentations.items():
+    for aug_key, aug_dict in cfg.train_transforms.items():
         train_transforms_list.append(hydra.utils.instantiate(aug_dict))
     train_transforms_list.extend([T.ToTensor(), T.Normalize(mean=cfg.normalization.mean, std=cfg.normalization.std)])
     train_transforms = T.Compose(train_transforms_list)

@@ -3,8 +3,8 @@ defaults:
     - model: cifar_resnet20
     - optimizer: defaults
     - lr_scheduler: defaults
-    - transformations@train_transforms: defaults
-    - transformations@eval_transforms: defaults
+    - transformations@train_transforms: resize
+    - transformations@eval_transforms: resize
     - normalization: defaults
     - training: defaults
     - adv_training: defaults

@@ -1,1 +1,1 @@
-from .cifar10_resnet import ResNet18, ResNet34, ResNet50
+from .cifar10_resnet import CifarResNet, BasicBlock

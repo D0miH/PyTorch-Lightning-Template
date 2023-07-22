@@ -1,10 +1,10 @@
-name: 'CifarResNet20'
+name: 'ResNet18'
 class_instance:
-    _target_: 'pl_models.cifar10_resnet.CifarResNet'
+    _target_: 'pl_models.torchvision_models.ResNet18'
     lr: ${optimizer.lr}
     num_classes: ${dataset.num_classes}
     partial_optimizer: ${optimizer}
     partial_lr_scheduler: ${lr_scheduler}
     partial_adv_attack: ${adv_training}
-    num_blocks: [3, 3, 3]
+    weights: 'IMAGENET1K_V2'
     checkpoint_path: null

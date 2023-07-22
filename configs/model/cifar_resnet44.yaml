@@ -1,4 +1,4 @@
-name: 'CifarResNet20'
+name: 'CifarResNet44'
 class_instance:
     _target_: 'pl_models.cifar10_resnet.CifarResNet'
     lr: ${optimizer.lr}
@@ -6,5 +6,5 @@ class_instance:
     partial_optimizer: ${optimizer}
     partial_lr_scheduler: ${lr_scheduler}
     partial_adv_attack: ${adv_training}
-    num_blocks: [3, 3, 3]
+    num_blocks: [7, 7, 7]
     checkpoint_path: null

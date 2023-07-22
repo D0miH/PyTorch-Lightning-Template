@@ -1,0 +1,3 @@
+center_crop:
+    _target_: "torchvision.transforms.CenterCrop"
+    size: ${dataset.image_size}

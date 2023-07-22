@@ -27,6 +27,7 @@ class Classifier(pl.LightningModule):
         partial_optimizer: Callable[[Iterator[Parameter]], torch.optim.Optimizer] = functools.partial(torch.optim.Adam),
         partial_lr_scheduler: Optional[Callable[[torch.optim.Optimizer], LRScheduler]] = None,
         partial_adv_attack: Optional[Callable[[nn.Module], torchattacks.attack.Attack]] = None,
+        checkpoint_path: Optional[Any] = None
     ):
         super().__init__()
         self.save_hyperparameters()
@@ -36,6 +37,7 @@ class Classifier(pl.LightningModule):
         self.partial_optimizer = partial_optimizer
         self.partial_lr_scheduler = partial_lr_scheduler
         self.partial_adv_attack = partial_adv_attack
+        self.checkpoint_path = checkpoint_path
 
     def forward(self, x):
         return self.model(x)
@@ -59,8 +61,8 @@ class Classifier(pl.LightningModule):
 
         output = self.model(x)
         loss = F.cross_entropy(output, y)
-        self.log("train_loss", round(loss.item(), 3), prog_bar=True)
-        self.log("train_acc", round(self.accuracy(output.softmax(1), y).item(), 3), prog_bar=True)
+        self.log("train_loss", loss.item(), prog_bar=True)
+        self.log("train_acc", self.accuracy(output.softmax(1), y).item(), prog_bar=True)
 
         return loss
 
@@ -68,15 +70,15 @@ class Classifier(pl.LightningModule):
         x, y = batch
         output = self.model(x)
         loss = F.cross_entropy(output, y)
-        self.log("val_acc", round(self.accuracy(output.softmax(1), y).item(), 3), prog_bar=True)
-        self.log("val_loss", round(loss.item(), 3), prog_bar=True)
+        self.log("val_acc", self.accuracy(output.softmax(1), y).item(), prog_bar=True)
+        self.log("val_loss", loss.item(), prog_bar=True)
 
     def test_step(self, batch, batch_idx):
         x, y = batch
         output = self.model(x)
         loss = F.cross_entropy(output, y)
-        self.log("test_acc", round(self.accuracy(output.softmax(1), y).item(), 3))
-        self.log("test_loss", round(loss.item(), 3))
+        self.log("test_acc", self.accuracy(output.softmax(1), y).item())
+        self.log("test_loss", loss.item())
 
     def configure_optimizers(self):
         optim = self.partial_optimizer(self.model.parameters())

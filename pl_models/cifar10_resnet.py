@@ -6,34 +6,27 @@ import torchattacks
 import torchattacks.attack
 
 from pl_modules import Classifier
-from models.cifar10_resnet import ResNet as PyTorchResNet
-from models.cifar10_resnet import BasicBlock, Bottleneck
+from models import CifarResNet as PyTorchResNet
+from models import BasicBlock
 
 
 class CifarResNet(Classifier):
-    def __init__(
-        self,
-        block: Literal['BasicBlock', 'Bottleneck'],
-        num_blocks: List[int],
-        **kwargs
-    ):
+    def __init__(self, num_blocks: List[int], block: Literal['BasicBlock'] = BasicBlock, **kwargs):
         classifier_valid_kwargs = inspect.signature(Classifier.__init__).parameters
         classifier_kwargs = {name: kwargs[name] for name in classifier_valid_kwargs if name in kwargs}
         super().__init__(**classifier_kwargs)
 
         self.save_hyperparameters()
 
-        blocks = {"BasicBlock": BasicBlock, "Bottleneck": Bottleneck}
+        self.model = PyTorchResNet(block=block, num_blocks=num_blocks, num_classes=classifier_kwargs['num_classes'])
 
-        self.model = PyTorchResNet(block=blocks[block], num_blocks=num_blocks, num_classes=classifier_kwargs['num_classes'])
-
-
-class CifarResNet18(CifarResNet):
-    def __init__(self, **kwargs):
-        classifier_valid_kwargs = inspect.signature(Classifier.__init__).parameters
-        classifier_kwargs = {name: kwargs[name] for name in classifier_valid_kwargs if name in kwargs}
-        super().__init__(
-            block='BasicBlock',
-            num_blocks=[2, 2, 2, 2],
-            **classifier_kwargs
-        )
+        if self.checkpoint_path is not None:
+            checkpoint = torch.load(self.checkpoint_path)
+            del checkpoint['state_dict']['model.linear.weight']
+            del checkpoint['state_dict']['model.linear.bias']
+            # load the model from the checkpoint. This will only load the weights.
+            # The rest (epoch, state of optimizers, etc.) will not be loaded
+            self.model.load_state_dict(
+                {key.replace('model.', ''): value
+                 for key, value in checkpoint['state_dict'].items()}, strict=False
+            )

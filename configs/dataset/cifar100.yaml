@@ -1,0 +1,7 @@
+image_size: 32
+num_classes: 100
+name: "CIFAR 100"
+class_instance:
+    _target_: "datasets.cifar100.CIFAR100"
+    root: './data/cifar100'
+    download: true
