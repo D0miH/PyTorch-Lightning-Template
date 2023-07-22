@@ -1,0 +1,10 @@
+image_size: 320
+num_classes: 10
+name: "ImageNette"
+class_instance:
+    _target_: "datasets.imagenette.ImageNette"
+    root: './data/imagenette'
+    download: true
+    size: ${dataset.image_size}
+    partitions: 2
+    used_partition: 0

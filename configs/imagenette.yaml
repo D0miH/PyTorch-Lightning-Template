@@ -1,0 +1,39 @@
+defaults:
+    - dataset: imagenette
+    - model: resnet18
+    - optimizer: defaults
+    - lr_scheduler: defaults
+    - transformations@train_transforms: [random_horizontal_flip, center_crop]
+    - transformations@eval_transforms: [random_horizontal_flip, center_crop]
+    - normalization: defaults
+    - training: defaults
+    - adv_training: defaults
+    - _self_
+
+seed: 42
+wandb:
+    entity: null
+    experiment_name: 'Template Experiment'
+    run_name: ${model.name} ${dataset.name} ${wandb.experiment_name}
+    offline: false
+    project: 'Template_Project'
+datamodule:
+    _target_: "pl_modules.datamodule.DataModule"
+    batch_size: ${training.batch_size}
+    dataset_args: null
+    dataloader_args:
+        num_workers: 8
+        shuffle: True
+        pin_memory: True
+train_transforms:
+    center_crop:
+        size: 224
+eval_transforms:
+    center_crop:
+        size: 224
+optimizer:
+    lr: 0.0001
+training:
+    batch_size: 128
+rtpt:
+    initials: 'DH'

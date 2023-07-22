@@ -6,5 +6,5 @@ class_instance:
     partial_optimizer: ${optimizer}
     partial_lr_scheduler: ${lr_scheduler}
     partial_adv_attack: ${adv_training}
-    weights: 'IMAGENET1K_V2'
+    weights: 'IMAGENET1K_V1'
     checkpoint_path: null

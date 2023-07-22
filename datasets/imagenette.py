@@ -2,13 +2,12 @@ import hashlib
 import os
 
 from typing import Optional, Callable
-from torchvision.datasets import ImageFolder
 from torchvision.datasets.utils import download_and_extract_archive, check_integrity
 
-from datasets.dataset_interface import DatasetInterface
+from datasets.dataset_interface import DatasetInterface, PartitionMixin, CustomImageFolder
 
 
-class ImageNette(ImageFolder, DatasetInterface):
+class ImageNette(PartitionMixin, CustomImageFolder, DatasetInterface):
     """`ImageNette <https://github.com/fastai/imagenette>`_ Dataset
     Inspired by CIFAR10 class of TorchVision.
     """
@@ -30,7 +29,8 @@ class ImageNette(ImageFolder, DatasetInterface):
         transform: Optional[Callable] = None,
         target_transform: Optional[Callable] = None,
         download: bool = False,
-        size=160
+        size=160,
+        **kwargs
     ):
         self.root = root
         self.train = train
@@ -47,7 +47,9 @@ class ImageNette(ImageFolder, DatasetInterface):
             image_folder_path = os.path.join(root, self.base_folder_320, 'train' if self.train else 'val')
         else:
             raise RuntimeError(f'Given image size of {size} is not supported. Please user either 160 or 320.')
-        super(ImageNette, self).__init__(image_folder_path, transform=transform, target_transform=target_transform)
+        super().__init__(
+            root=image_folder_path, transform=transform, target_transform=target_transform, train=train, **kwargs
+        )
 
     def __getitem__(self, index: int):
         path, _ = self.samples[index]

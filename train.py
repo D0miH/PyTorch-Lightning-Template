@@ -99,7 +99,8 @@ def train_model(cfg: DictConfig):
         logger=wandb_logger,
         max_epochs=cfg.training.epochs,
         deterministic=True,
-        callbacks=callbacks
+        callbacks=callbacks,
+        log_every_n_steps=25
     )
     trainer.fit(model, datamodule=datamodule)
     trainer.test(model, datamodule=datamodule)

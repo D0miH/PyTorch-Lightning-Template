@@ -16,7 +16,7 @@ class ResNet18(Classifier):
         model_valid_kwargs = inspect.signature(resnet18).parameters
         model_kwargs = {name: kwargs[name] for name in model_valid_kwargs if name in kwargs}
 
-        self.model = resnet18(model_kwargs)
+        self.model = resnet18(**model_kwargs)
 
         self.model.fc = nn.Linear(self.model.fc.in_features, kwargs['num_classes'])
 
@@ -32,6 +32,6 @@ class ResNet50(Classifier):
         model_valid_kwargs = inspect.signature(resnet50).parameters
         model_kwargs = {name: kwargs[name] for name in model_valid_kwargs if name in kwargs}
 
-        self.model = resnet50(model_kwargs)
+        self.model = resnet50(**model_kwargs)
 
         self.model.fc = nn.Linear(self.model.fc.in_features, kwargs['num_classes'])
