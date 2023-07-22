@@ -2,9 +2,9 @@ defaults:
     - dataset: facescrub_cropped
     - model: resnet18
     - optimizer: defaults
-    - lr_scheduler: defaults
-    - transformations@train_transforms: [random_horizontal_flip, center_crop]
-    - transformations@eval_transforms: [random_horizontal_flip, center_crop]
+    - lr_scheduler: multi_step_lr
+    - transformations@train_transforms: [random_resized_crop, color_jitter, random_horizontal_flip]
+    - transformations@eval_transforms: [random_resized_crop, color_jitter, random_horizontal_flip]
     - normalization: defaults
     - training: defaults
     - adv_training: defaults
@@ -25,5 +25,9 @@ datamodule:
         num_workers: 8
         shuffle: True
         pin_memory: True
+lr_scheduler:
+    milestones: [75, 90]
+optimizer:
+    lr: 0.001
 rtpt:
     initials: 'DH'

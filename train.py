@@ -18,10 +18,12 @@ import datasets
 from pl_modules import Classifier
 from pl_modules.datamodule import DataModule
 from utils import get_class_from_module, LightningRtpt
-from custom_resolvers import wandb_artifact_path
+from custom_resolvers import wandb_artifact_path, tuple_resolver, list_resolver
 
 OmegaConf.register_new_resolver("eval", eval)
 OmegaConf.register_new_resolver("wandb_artifact_path", wandb_artifact_path)
+OmegaConf.register_new_resolver("tuple", tuple_resolver)
+OmegaConf.register_new_resolver("list", list_resolver)
 
 
 @hydra.main(version_base=None, config_path='configs', config_name='defaults.yaml')

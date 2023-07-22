@@ -1,0 +1,6 @@
+color_jitter:
+    _target_: "torchvision.transforms.ColorJitter"
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.1
+    hue: 0.1

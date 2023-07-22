@@ -1,0 +1,6 @@
+random_resized_crop:
+    _target_: "torchvision.transforms.RandomResizedCrop"
+    size: ${tuple:${dataset.image_size},${dataset.image_size}}
+    scale: [0.85, 1]
+    ratio: [1, 1]
+    antialias: true
