@@ -103,10 +103,10 @@ def train_model(cfg: DictConfig):
     trainer.test(model, datamodule=datamodule)
 
     # save the hydra logs for debugging and reproducibility
-    wandb.save(
-        './' + hydra.core.hydra_config.HydraConfig.get().run.dir + '/.hydra/*',
-        base_path=os.path.dirname('./' + hydra.core.hydra_config.HydraConfig.get().run.dir + '/.hydra')
-    )
+    # save the hydra logs for debugging and reproducibility
+    hydra_artifact = wandb.Artifact(f'hydra_config-{wandb.run.id}', type='hydra_config')
+    hydra_artifact.add_dir('./' + hydra.core.hydra_config.HydraConfig.get().run.dir + '/.hydra/')
+    wandb.run.log_artifact(hydra_artifact)
 
 
 if __name__ == '__main__':
