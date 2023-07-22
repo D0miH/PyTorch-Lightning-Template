@@ -4,5 +4,5 @@ factor: 0.1
 patience: 10
 threshold: ${eval:'1e-4'}
 min_lr: 0
-verbose: true
+verbose: false
 _partial_: true
