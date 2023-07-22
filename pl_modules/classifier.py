@@ -87,7 +87,7 @@ class Classifier(pl.LightningModule):
             return optim
 
         scheduler = self.partial_lr_scheduler(optim)
-        lr_scheduler_config = {'scheduler': scheduler, 'interval': 'step', 'monitor': 'val_loss', 'name': 'LR'}
+        lr_scheduler_config = {'scheduler': scheduler, 'interval': 'epoch', 'monitor': 'val_loss', 'name': 'LR'}
 
         return [optim], [lr_scheduler_config]
 
