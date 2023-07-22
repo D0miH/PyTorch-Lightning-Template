@@ -28,20 +28,20 @@ class ResNet(Classifier):
 
 
 class ResNet18(ResNet):
-    cls_name = 'resnet18'
+    _cls_name = 'resnet18'
 
 
 class ResNet34(ResNet):
-    cls_name = 'resnet34'
+    _cls_name = 'resnet34'
 
 
 class ResNet50(ResNet):
-    cls_name = 'resnet50'
+    _cls_name = 'resnet50'
 
 
 class ResNet101(ResNet):
-    cls_name = 'resnet101'
+    _cls_name = 'resnet101'
 
 
 class ResNet152(ResNet):
-    cls_name = 'resnet152'
+    _cls_name = 'resnet152'
