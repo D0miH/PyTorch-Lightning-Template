@@ -1,1 +1,1 @@
-from .torchvision_models import ResNet50
+from .torchvision_models import *
