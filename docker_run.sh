@@ -2,7 +2,7 @@
 IMAGE_NAME=pytorch_lightning_template
 CONTAINER_NAME=pytorch_lightning_template
 DEVICES=""
-MOUNTING_FILE=""
+MOUNTING_FILE="mounts.docker"
 SHM_SIZE="16G"
 PORT_MAPPING=""
 

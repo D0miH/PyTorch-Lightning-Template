@@ -4,6 +4,7 @@ lightning_logs/
 wandb/
 outputs/
 Template Project/
+/**/checkpoints/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
