@@ -19,7 +19,13 @@ class DataModule(pl.LightningDataModule):
         train_transforms=None,
         val_transforms=None,
         test_transforms=None,
-        dataloader_args: Optional[Dict[str, Any]] = None
+        dataloader_args: Optional[Dict[str, Any]] = None,
+        train_dataset_cls: Type[Dataset] = None,
+        train_dataset_seed: int = None,
+        val_dataset_cls: Type[Dataset] = None,
+        val_dataset_seed: int = None,
+        test_dataset_cls: Type[Dataset] = None,
+        test_dataset_seed: int = None,
     ):
         super().__init__()
 
@@ -30,6 +36,12 @@ class DataModule(pl.LightningDataModule):
         self._val_transforms = val_transforms
         self._test_transforms = test_transforms
         self.dataloader_args = dataloader_args or {}
+        self.train_dataset_cls = train_dataset_cls
+        self.val_dataset_cls = val_dataset_cls
+        self.test_dataset_cls = test_dataset_cls
+        self.train_dataset_seed = train_dataset_seed
+        self.val_dataset_seed = val_dataset_seed
+        self.test_dataset_seed = test_dataset_seed
 
         # those attributes will be set during setup
         self.train_data = None
@@ -37,31 +49,48 @@ class DataModule(pl.LightningDataModule):
         self.test_data = None
 
     def prepare_data(self) -> None:
-        self.dataset_cls(**ChainMap({'train': True}, self.dataset_args))
-        self.dataset_cls(**ChainMap({'train': False}, self.dataset_args))
+        train_set_cls = self.train_dataset_cls or self.dataset_cls
+        train_set_cls(**ChainMap({'train': True}, self.dataset_args))
+
+        test_set_cls = self.test_dataset_cls or self.dataset_cls
+        test_set_cls(**ChainMap({'train': False}, self.dataset_args))
 
     def setup(self, stage: Optional[str] = None, validation_split_ratio: float = 0.1):
         # even though these datasets are identical, we have to create it once for the training data and once for
         # the validation data because of the different transformations
-        train_data: DatasetInterface = self.dataset_cls(
+        train_set_cls = self.train_dataset_cls or self.dataset_cls
+        val_set_cls = self.val_dataset_cls or self.dataset_cls
+
+        train_data: DatasetInterface = train_set_cls(
             transform=self._train_transforms, **ChainMap({'train': True}, self.dataset_args)
         )
-        val_data: DatasetInterface = self.dataset_cls(
+        train_indices = [i for i in range(len(train_data))]
+        # if a training and validation dataset are the same class we have to split the dataset
+        if self.train_dataset_cls == self.val_dataset_cls:
+            train_indices, _ = train_test_split(
+                list(range(len(train_data))),
+                test_size=validation_split_ratio,
+                random_state=self.train_dataset_seed or int(os.environ['PL_GLOBAL_SEED']),
+                shuffle=True,
+                stratify=train_data.targets
+            )
+        self.train_data = Subset(train_data, train_indices)
+
+        val_data: DatasetInterface = val_set_cls(
             transform=self._val_transforms, **ChainMap({'train': True}, self.dataset_args)
         )
-        train_indices, val_indices = train_test_split(
-            list(range(len(train_data))),
+
+        _, val_indices = train_test_split(
+            list(range(len(val_data))),
             test_size=validation_split_ratio,
-            random_state=int(os.environ['PL_GLOBAL_SEED']),
+            random_state=self.val_dataset_seed or int(os.environ['PL_GLOBAL_SEED']),
             shuffle=True,
-            stratify=train_data.targets
+            stratify=val_data.targets
         )
-        self.train_data = Subset(train_data, train_indices)
         self.val_data = Subset(val_data, val_indices)
 
-        self.test_data = self.dataset_cls(
-            transform=self._test_transforms, **ChainMap({'train': False}, self.dataset_args)
-        )
+        test_set_cls = self.test_dataset_cls or self.dataset_cls
+        self.test_data = test_set_cls(transform=self._test_transforms, **ChainMap({'train': False}, self.dataset_args))
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
         return DataLoader(self.train_data, batch_size=self.batch_size, **self.dataloader_args)
@@ -77,4 +106,5 @@ class DataModule(pl.LightningDataModule):
         )
 
     def num_classes(self) -> int:
-        return len(self.dataset_cls(**ChainMap({'train': False}, self.dataset_args)).classes)
+        dataset_cls = self.train_dataset_cls or self.dataset_cls
+        return len(dataset_cls(**ChainMap({'train': False}, self.dataset_args)).classes)
