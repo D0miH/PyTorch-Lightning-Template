@@ -1,1 +1,1 @@
-from .wandb_resolvers import wandb_artifact
+from .wandb_resolvers import wandb_artifact_path

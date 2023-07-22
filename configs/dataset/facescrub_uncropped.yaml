@@ -1,0 +1,9 @@
+image_size: 224
+num_classes: 530
+name: "FaceScrubUncropped"
+class_instance:
+    _target_: "datasets.facescrub.FaceScrubUncropped"
+    root: './data/facescrub'
+    download: false
+    group: 'all'
+    test_set_split_ratio: 0.1

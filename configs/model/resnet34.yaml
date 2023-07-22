@@ -1,0 +1,10 @@
+name: 'ResNet34'
+class_instance:
+    _target_: 'pl_models.torchvision_models.ResNet34'
+    lr: ${optimizer.lr}
+    num_classes: ${dataset.num_classes}
+    partial_optimizer: ${optimizer}
+    partial_lr_scheduler: ${lr_scheduler}
+    partial_adv_attack: ${adv_training}
+    weights: 'IMAGENET1K_V1'
+    checkpoint_path: null

@@ -12,7 +12,16 @@ from datasets.dataset_interface import DatasetInterface
 class FaceScrub(Dataset, DatasetInterface):
     targets: List[Any]
 
-    def __init__(self, group='all', train=True, transform=None, cropped=True, root='data/facescrub', test_set_split_ratio=0.1, download=None):
+    def __init__(
+        self,
+        group='all',
+        train=True,
+        transform=None,
+        cropped=True,
+        root='data/facescrub',
+        test_set_split_ratio=0.1,
+        download=None
+    ):
         """
         group: 'actors', 'actresses', 'all
         train: True, False
@@ -37,7 +46,6 @@ class FaceScrub(Dataset, DatasetInterface):
                 wrong_name_index = self.classes.index(wrong_name)
                 self.classes[wrong_name_index] = correct_name
 
-
             for class_name, idx in self.class_to_idx.copy().items():
                 if class_name in name_fix_dict.keys():
                     del self.class_to_idx[class_name]
@@ -53,9 +61,7 @@ class FaceScrub(Dataset, DatasetInterface):
             self.classes = self.dataset.classes
             self.class_to_idx = self.dataset.class_to_idx
 
-            name_fix_dict = {
-                'Tatyana_M._Ali': 'Tatyana_Ali'
-            }
+            name_fix_dict = {'Tatyana_M._Ali': 'Tatyana_Ali'}
 
             for wrong_name, correct_name in name_fix_dict.items():
                 wrong_name_index = self.classes.index(wrong_name)
@@ -132,13 +138,31 @@ class FaceScrub(Dataset, DatasetInterface):
             im = self.transform(im)
 
         return im, self.targets[idx]
-    
+
 
 class FaceScrubUncropped(FaceScrub):
-    def __init__(self, group='all', train=True, transform=None, root='data/facescrub', test_set_split_ratio=0, download=None):
-        super().__init__(group, train, transform=transform, cropped=False, root=root.replace('uncropped', ''), test_set_split_ratio=test_set_split_ratio)
+    def __init__(
+        self, group='all', train=True, transform=None, root='data/facescrub', test_set_split_ratio=0, download=None
+    ):
+        super().__init__(
+            group,
+            train,
+            transform=transform,
+            cropped=False,
+            root=root.replace('uncropped', ''),
+            test_set_split_ratio=test_set_split_ratio
+        )
 
 
 class FaceScrubCropped(FaceScrub):
-    def __init__(self, group='all', train=True, transform=None, root='data/facescrub', test_set_split_ratio=0, download=None):
-        super().__init__(group, train, transform=transform, cropped=True, root=root.replace('cropped', ''), test_set_split_ratio=test_set_split_ratio)
+    def __init__(
+        self, group='all', train=True, transform=None, root='data/facescrub', test_set_split_ratio=0, download=None
+    ):
+        super().__init__(
+            group,
+            train,
+            transform=transform,
+            cropped=True,
+            root=root.replace('cropped', ''),
+            test_set_split_ratio=test_set_split_ratio
+        )
