@@ -106,16 +106,3 @@ class Classifier(pl.LightningModule):
 
     def get_architecture_name(self) -> str:
         return type(self).__name__
-
-    @staticmethod
-    def add_model_specific_args(parent_parser: ArgumentParser) -> ArgumentParser:
-        return parent_parser
-
-    @classmethod
-    def from_argparse_args(cls: Type["Classifier"], args: Namespace) -> "Classifier":
-        params = vars(args)
-
-        valid_kwargs = inspect.signature(cls.__init__).parameters
-        cls_kwargs = {name: params[name] for name in valid_kwargs if name in params}
-
-        return cls(**cls_kwargs)
