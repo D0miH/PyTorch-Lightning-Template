@@ -1,3 +1,5 @@
+import sys
+
 from pytorch_lightning import seed_everything
 import torchvision.transforms as T
 import pytorch_lightning as pl
@@ -110,4 +112,5 @@ def train_model(cfg: DictConfig):
 
 
 if __name__ == '__main__':
+    sys.argv.append('hydra.run.dir=./outputs/${now:%Y-%m-%d}/${now:%Y-%m-%d_%H-%M-%S}')
     train_model()
