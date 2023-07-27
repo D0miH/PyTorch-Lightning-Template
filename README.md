@@ -1,6 +1,8 @@
 # PyTorch-Lightning-Template
 A PyTorch-Lightning template that supports yapf autoformatting and includes a docker container to run the code.
 
+To see examples on how to use the configs, have a look at the [config readme](./configs/README.md)
+
 # Setup
 
 # Setup Using Docker
