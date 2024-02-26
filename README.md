@@ -5,14 +5,14 @@ To see examples on how to use the configs, have a look at the [config readme](./
 
 # Setup
 
-# Setup Using Docker
-## Build the Docker Image
+## Setup Using Docker
+### Build the Docker Image
 To build the Docker image run: 
 ```bash
 ./docker_build.sh -n <image-name> -w <wandb-key>
 ```
 
-## Start Docker Container
+### Start Docker Container
 To start the Docker container run the following command:
 ```bash
 ./docker_run.sh -n <container_name> -i <image_name> -d <comma_separated_device_ids>
@@ -26,7 +26,7 @@ docker run --rm --name <container-name> --gpus '"device=<device-ids>"' -v $(pwd)
 That's it!🎊️  
 Now you are setup and ready to develop using Docker!
 
-# Local Setup
+## Local Setup
 If you don't want to use Docker and instead want to set up the project locally to use `yapf` and `pre-commit` you have to first install PyTorch:
 ```bash
 conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
